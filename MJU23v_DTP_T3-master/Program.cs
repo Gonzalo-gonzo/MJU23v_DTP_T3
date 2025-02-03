@@ -25,6 +25,7 @@ namespace MJU23v_DTP_T2
 
             public Link(string line)
             {
+                // FIXME: Kontrollera att raden innehåller exakt 5 delar innan split.
                 string[] parts = line.Split('|');
                 if (parts.Length != 5)
                 {
@@ -44,6 +45,7 @@ namespace MJU23v_DTP_T2
 
             public void OpenLink()
             {
+                // FIXME: Lägg till felhantering om länken är ogiltig eller inte kan öppnas.
                 Process application = new Process();
                 application.StartInfo.UseShellExecute = true;
                 application.StartInfo.FileName = Url;
@@ -60,7 +62,15 @@ namespace MJU23v_DTP_T2
         {
             string filePath = @"..\..\..\links\links.lis";
 
-            links = LoadLinksFromFile(filePath);
+            try
+            {
+                // FIXME: Kontrollera om filen existerar innan inläsning.
+                links = LoadLinksFromFile(filePath);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fel vid inläsning av fil: {ex.Message}");
+            }
 
             Console.WriteLine("Välkommen till länklistan! Skriv 'hjälp' för hjälp!");
 
@@ -114,6 +124,7 @@ namespace MJU23v_DTP_T2
                     Console.Write("  ange länk: ");
                     string url = Console.ReadLine();
 
+                    // FIXME: Validera URL-formatet innan du lägger till länken.
                     Link newLink = new Link(category, group, name, description, url);
                     links.Add(newLink);
                 }
@@ -122,14 +133,22 @@ namespace MJU23v_DTP_T2
                     if (cmdParts.Length == 2)
                     {
                         filePath = $@"..\..\..\links\{cmdParts[1]}";
-                        using (StreamWriter writer = new StreamWriter(filePath))
+                        try
                         {
-                            foreach (Link linkObj in links)
+                            using (StreamWriter writer = new StreamWriter(filePath))
                             {
-                                writer.WriteLine(linkObj.Serialize());
+                                foreach (Link linkObj in links)
+                                {
+                                    writer.WriteLine(linkObj.Serialize());
+                                }
                             }
+                            Console.WriteLine($"Länkar sparade till {filePath}.");
                         }
-                        Console.WriteLine($"Länkar sparade till {filePath}.");
+                        catch (Exception ex)
+                        {
+                            // FIXME: Lägg till bättre felmeddelande för skrivfel.
+                            Console.WriteLine($"Fel vid sparning av fil: {ex.Message}");
+                        }
                     }
                     else
                     {
@@ -141,8 +160,16 @@ namespace MJU23v_DTP_T2
                     if (cmdParts.Length == 2)
                     {
                         filePath = $@"..\..\..\links\{cmdParts[1]}";
-                        links = LoadLinksFromFile(filePath);
-                        Console.WriteLine($"Länkar laddade från {filePath}.");
+                        try
+                        {
+                            links = LoadLinksFromFile(filePath);
+                            Console.WriteLine($"Länkar laddade från {filePath}.");
+                        }
+                        catch (Exception ex)
+                        {
+                            // FIXME: Lägg till bättre felmeddelande för ogiltig filväg.
+                            Console.WriteLine($"Fel vid laddning av fil: {ex.Message}");
+                        }
                     }
                     else
                     {
@@ -151,14 +178,22 @@ namespace MJU23v_DTP_T2
                 }
                 else if (command == "ta")
                 {
-                    if (cmdParts.Length >= 3 && cmdParts[1] == "bort" && int.TryParse(cmdParts[2], out int index) && index >= 0 && index < links.Count)
+                    if (cmdParts.Length >= 3 && cmdParts[1] == "bort" && int.TryParse(cmdParts[2], out int index))
                     {
-                        links.RemoveAt(index);
-                        Console.WriteLine($"Länk på index {index} har tagits bort.");
+                        if (index >= 0 && index < links.Count)
+                        {
+                            links.RemoveAt(index);
+                            Console.WriteLine($"Länk på index {index} har tagits bort.");
+                        }
+                        else
+                        {
+                            // FIXME: Förbättra felmeddelandet för ogiltigt index.
+                            Console.WriteLine($"Fel: Index {index} är ogiltigt. Ange ett värde mellan 0 och {links.Count - 1}.");
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("Fel: Ogiltigt index eller kommando.");
+                        Console.WriteLine("Fel: Ogiltigt kommando eller argument för 'ta bort'.");
                     }
                 }
                 else if (command == "öppna")
@@ -177,16 +212,25 @@ namespace MJU23v_DTP_T2
                         }
                         else
                         {
+                            // FIXME: Informera användaren om att gruppen inte hittades.
                             Console.WriteLine($"Fel: Gruppen '{groupName}' hittades inte.");
                         }
                     }
-                    else if (cmdParts.Length >= 3 && cmdParts[1] == "länk" && int.TryParse(cmdParts[2], out int linkIndex) && linkIndex >= 0 && linkIndex < links.Count)
+                    else if (cmdParts.Length >= 3 && cmdParts[1] == "länk" && int.TryParse(cmdParts[2], out int linkIndex))
                     {
-                        links[linkIndex].OpenLink();
+                        if (linkIndex >= 0 && linkIndex < links.Count)
+                        {
+                            links[linkIndex].OpenLink();
+                        }
+                        else
+                        {
+                            // FIXME: Lägg till bättre felmeddelande för ogiltigt länkindex.
+                            Console.WriteLine($"Fel: Index {linkIndex} är ogiltigt. Ange ett värde mellan 0 och {links.Count - 1}.");
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("Fel: Ogiltigt kommando eller index.");
+                        Console.WriteLine("Fel: Ogiltigt kommando eller argument för 'öppna'.");
                     }
                 }
                 else
@@ -255,6 +299,7 @@ namespace MJU23v_DTP_T2
 
         private static void HandleUnknownCommand(string command)
         {
+            // FIXME: Gör felmeddelandet mer användarvänligt.
             Console.WriteLine($"Okänt kommando: '{command}'");
         }
     }
