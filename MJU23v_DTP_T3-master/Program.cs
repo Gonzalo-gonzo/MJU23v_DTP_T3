@@ -42,21 +42,6 @@ namespace MJU23v_DTP_T2
                 Console.WriteLine($"|{index,-2}|{Category,-10}|{Group,-10}|{Name,-20}|{Description,-40}|");
             }
 
-            public void OpenLink()
-            {
-                try
-                {
-                    Process application = new Process();
-                    application.StartInfo.UseShellExecute = true;
-                    application.StartInfo.FileName = Url;
-                    application.Start();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Fel: Kunde inte öppna länken '{Url}'. Kontrollera att URL:en är giltig. ({ex.Message})");
-                }
-            }
-
             public string Serialize()
             {
                 return $"{Category}|{Group}|{Name}|{Description}|{Url}";
@@ -128,7 +113,6 @@ namespace MJU23v_DTP_T2
                     Console.Write("  ange länk: ");
                     string url = Console.ReadLine();
 
-                    // Validera att URL-formatet är korrekt.
                     if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
                     {
                         Console.WriteLine($"Fel: URL '{url}' är ogiltig. Ange en giltig URL.");
@@ -138,6 +122,49 @@ namespace MJU23v_DTP_T2
                     Link newLink = new Link(category, group, name, description, url);
                     links.Add(newLink);
                     Console.WriteLine($"Länk '{name}' har skapats.");
+                }
+                else if (command == "sök")
+                {
+                    // Implementera sökfunktionalitet.
+                    if (cmdParts.Length < 3)
+                    {
+                        Console.WriteLine("Fel: Ange vad du vill söka efter och sökordet. Exempel: sök namn Skola");
+                        continue;
+                    }
+
+                    string searchField = cmdParts[1].ToLower();
+                    string searchTerm = string.Join(' ', cmdParts.Skip(2)).ToLower();
+
+                    var searchResults = new List<Link>();
+
+                    switch (searchField)
+                    {
+                        case "namn":
+                            searchResults = links.Where(link => link.Name.ToLower().Contains(searchTerm)).ToList();
+                            break;
+                        case "kategori":
+                            searchResults = links.Where(link => link.Category.ToLower().Contains(searchTerm)).ToList();
+                            break;
+                        case "grupp":
+                            searchResults = links.Where(link => link.Group.ToLower().Contains(searchTerm)).ToList();
+                            break;
+                        default:
+                            Console.WriteLine($"Fel: Ogiltigt sökfält '{searchField}'. Tillåtna fält är 'namn', 'kategori' och 'grupp'.");
+                            continue;
+                    }
+
+                    if (searchResults.Any())
+                    {
+                        Console.WriteLine($"Sökresultat för '{searchTerm}' i fältet '{searchField}':");
+                        foreach (var result in searchResults)
+                        {
+                            result.Print(links.IndexOf(result));
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Inga resultat hittades för '{searchTerm}' i fältet '{searchField}'.");
+                    }
                 }
                 else if (command == "spara")
                 {
@@ -192,64 +219,6 @@ namespace MJU23v_DTP_T2
                         Console.WriteLine("Fel: Ange en giltig filväg.");
                     }
                 }
-                else if (command == "ta")
-                {
-                    if (cmdParts.Length >= 3 && cmdParts[1] == "bort" && int.TryParse(cmdParts[2], out int index))
-                    {
-                        if (index >= 0 && index < links.Count)
-                        {
-                            var removedLinkName = links[index].Name;
-                            links.RemoveAt(index);
-                            Console.WriteLine($"Länk '{removedLinkName}' på index {index} har tagits bort.");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Fel: Index {index} är ogiltigt. Ange ett värde mellan 0 och {links.Count - 1}.");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Fel: Ogiltigt kommando eller argument för 'ta bort'.");
-                    }
-                }
-                else if (command == "öppna")
-                {
-                    if (cmdParts.Length >= 3 && cmdParts[1] == "grupp")
-                    {
-                        string groupName = cmdParts[2];
-                        var groupLinks = links.Where(link => link.Group.Equals(groupName, StringComparison.OrdinalIgnoreCase)).ToList();
-
-                        if (groupLinks.Any())
-                        {
-                            foreach (Link linkObj in groupLinks)
-                            {
-                                linkObj.OpenLink();
-                            }
-                        }
-                        else
-                        {
-                            var availableGroups = links.Select(link => link.Group).Distinct().OrderBy(g => g).ToList();
-                            var availableGroupsText = availableGroups.Any() ? $"Tillgängliga grupper är: {string.Join(", ", availableGroups)}." : "Det finns inga grupper.";
-
-                            Console.WriteLine($"Fel: Gruppen '{groupName}' hittades inte. {availableGroupsText}");
-                        }
-                    }
-                    else if (cmdParts.Length >= 3 && cmdParts[1] == "länk" && int.TryParse(cmdParts[2], out int linkIndex))
-                    {
-                        if (linkIndex >= 0 && linkIndex < links.Count)
-                        {
-                            links[linkIndex].OpenLink();
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Fel: Index {linkIndex} är ogiltigt. Ange ett värde mellan 0 och {links.Count - 1}.");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Fel: Ogiltigt kommando eller argument för 'öppna'.");
-                    }
-                }
                 else
                 {
                     HandleUnknownCommand(command);
@@ -301,23 +270,15 @@ namespace MJU23v_DTP_T2
             Console.WriteLine("ladda <filnamn> - Ladda länkar från en fil med angivet namn. Exempel:");
             Console.WriteLine("                  ladda mina_lankar.txt");
 
-            // Hjälp för att ta bort länkar.
-            Console.WriteLine("ta bort <index> - Ta bort länken på det angivna indexet. Exempel:");
-            Console.WriteLine("                  ta bort 0");
-
-            // Hjälp för att öppna länkar.
-            Console.WriteLine("öppna länk <index> - Öppna en specifik länk baserat på dess index. Exempel:");
-            Console.WriteLine("                     öppna länk 0");
-
-            // Hjälp för att öppna grupper av länkar.
-            Console.WriteLine("öppna grupp <gruppnamn> - Öppna alla länkar i den angivna gruppen. Exempel:");
-            Console.WriteLine("                          öppna grupp Skola");
+            // Hjälp för att söka efter länkar.
+            Console.WriteLine("sök <fält> <sökord> - Sök efter länkar baserat på ett fält. Tillåtna fält är:");
+            Console.WriteLine("                     namn, kategori eller grupp. Exempel:");
+            Console.WriteLine("                     sök namn Skola");
         }
 
         private static void HandleUnknownCommand(string command)
         {
-            // Felmeddelande för okända kommandon.
-            var validCommands = new[] { "hjälp", "sluta", "lista", "ny", "spara", "ladda", "ta bort", "öppna" };
+            var validCommands = new[] { "hjälp", "sluta", "lista", "ny", "spara", "ladda", "sök" };
 
             Console.WriteLine($"Okänt kommando: '{command}'. Tillgängliga kommandon är: {string.Join(", ", validCommands)}.");
         }
