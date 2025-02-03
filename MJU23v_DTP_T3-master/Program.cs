@@ -155,6 +155,15 @@ namespace MJU23v_DTP_T2
                     if (cmdParts.Length == 2)
                     {
                         filePath = $@"..\..\..\links\{cmdParts[1]}";
+
+                        // Kontrollera om filen existerar innan laddning.
+                        if (!File.Exists(filePath))
+                        {
+                            // Användarvänligt felmeddelande om filen inte hittas.
+                            Console.WriteLine($"Fel: Filen '{filePath}' hittades inte. Kontrollera filnamnet och försök igen.");
+                            continue;
+                        }
+
                         try
                         {
                             links = LoadLinksFromFile(filePath);
@@ -174,7 +183,6 @@ namespace MJU23v_DTP_T2
                 {
                     if (cmdParts.Length >= 3 && cmdParts[1] == "bort" && int.TryParse(cmdParts[2], out int index))
                     {
-                        // Kontrollerar om index är giltigt.
                         if (index >= 0 && index < links.Count)
                         {
                             links.RemoveAt(index);
@@ -182,13 +190,11 @@ namespace MJU23v_DTP_T2
                         }
                         else
                         {
-                            // Användarvänligt felmeddelande för ogiltigt index.
                             Console.WriteLine($"Fel: Index {index} är ogiltigt. Ange ett värde mellan 0 och {links.Count - 1}.");
                         }
                     }
                     else
                     {
-                        // Felmeddelande för ogiltigt kommando eller argument.
                         Console.WriteLine("Fel: Ogiltigt kommando eller argument för 'ta bort'.");
                     }
                 }
