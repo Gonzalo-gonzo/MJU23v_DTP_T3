@@ -28,7 +28,7 @@ namespace MJU23v_DTP_T2
                 string[] parts = line.Split('|');
                 if (parts.Length != 5)
                 {
-                    throw new ArgumentException("Felaktigt format i länkraden.");
+                    throw new ArgumentException("Felaktigt format i länkraden. Kontrollera att varje rad innehåller exakt 5 delar separerade med '|'.");
                 }
                 Category = parts[0];
                 Group = parts[1];
@@ -44,10 +44,17 @@ namespace MJU23v_DTP_T2
 
             public void OpenLink()
             {
-                Process application = new Process();
-                application.StartInfo.UseShellExecute = true;
-                application.StartInfo.FileName = Url;
-                application.Start();
+                try
+                {
+                    Process application = new Process();
+                    application.StartInfo.UseShellExecute = true;
+                    application.StartInfo.FileName = Url;
+                    application.Start();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Fel: Kunde inte öppna länken '{Url}'. Kontrollera att URL:en är giltig. ({ex.Message})");
+                }
             }
 
             public string Serialize()
@@ -121,8 +128,16 @@ namespace MJU23v_DTP_T2
                     Console.Write("  ange länk: ");
                     string url = Console.ReadLine();
 
+                    // Validera att URL-formatet är korrekt.
+                    if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
+                    {
+                        Console.WriteLine($"Fel: URL '{url}' är ogiltig. Ange en giltig URL.");
+                        continue;
+                    }
+
                     Link newLink = new Link(category, group, name, description, url);
                     links.Add(newLink);
+                    Console.WriteLine($"Länk '{name}' har skapats.");
                 }
                 else if (command == "spara")
                 {
@@ -183,8 +198,9 @@ namespace MJU23v_DTP_T2
                     {
                         if (index >= 0 && index < links.Count)
                         {
+                            var removedLinkName = links[index].Name;
                             links.RemoveAt(index);
-                            Console.WriteLine($"Länk på index {index} har tagits bort.");
+                            Console.WriteLine($"Länk '{removedLinkName}' på index {index} har tagits bort.");
                         }
                         else
                         {
@@ -212,7 +228,6 @@ namespace MJU23v_DTP_T2
                         }
                         else
                         {
-                            // Förbättrat felmeddelande för ogiltig grupp.
                             var availableGroups = links.Select(link => link.Group).Distinct().OrderBy(g => g).ToList();
                             var availableGroupsText = availableGroups.Any() ? $"Tillgängliga grupper är: {string.Join(", ", availableGroups)}." : "Det finns inga grupper.";
 
@@ -302,7 +317,9 @@ namespace MJU23v_DTP_T2
         private static void HandleUnknownCommand(string command)
         {
             // Felmeddelande för okända kommandon.
-            Console.WriteLine($"Okänt kommando: '{command}'");
+            var validCommands = new[] { "hjälp", "sluta", "lista", "ny", "spara", "ladda", "ta bort", "öppna" };
+
+            Console.WriteLine($"Okänt kommando: '{command}'. Tillgängliga kommandon är: {string.Join(", ", validCommands)}.");
         }
     }
 }
