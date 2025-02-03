@@ -58,10 +58,10 @@ namespace MJU23v_DTP_T2
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fel vid inläsning av fil: {ex.Message}");
+                PrintError($"Fel vid inläsning av fil: {ex.Message}");
             }
 
-            Console.WriteLine("Välkommen till länklistan! Skriv 'hjälp' för hjälp!");
+            PrintInfo("Välkommen till länklistan! Skriv 'hjälp' för hjälp!");
 
             do
             {
@@ -79,7 +79,7 @@ namespace MJU23v_DTP_T2
 
                 if (command == "sluta")
                 {
-                    Console.WriteLine("Hej då! Välkommen åter!");
+                    PrintInfo("Hej då! Välkommen åter!");
                     break;
                 }
                 else if (command == "hjälp")
@@ -90,7 +90,7 @@ namespace MJU23v_DTP_T2
                 {
                     if (links.Count == 0)
                     {
-                        Console.WriteLine("Inga länkar att visa.");
+                        PrintWarning("Inga länkar att visa.");
                     }
                     else
                     {
@@ -122,55 +122,13 @@ namespace MJU23v_DTP_T2
                     // Validera att URL-formatet är korrekt.
                     if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
                     {
-                        Console.WriteLine($"Fel: URL '{url}' är ogiltig. Ange en giltig URL.");
+                        PrintError($"URL '{url}' är ogiltig. Ange en giltig URL.");
                         continue;
                     }
 
                     Link newLink = new Link(category, group, name, description, url);
                     links.Add(newLink);
-                    Console.WriteLine($"Länk '{name}' har skapats.");
-                }
-                else if (command == "sök")
-                {
-                    if (cmdParts.Length < 3)
-                    {
-                        Console.WriteLine("Fel: Ange vad du vill söka efter och sökordet. Exempel: sök namn Skola");
-                        continue;
-                    }
-
-                    string searchField = cmdParts[1].ToLower();
-                    string searchTerm = string.Join(' ', cmdParts.Skip(2)).ToLower();
-
-                    var searchResults = new List<Link>();
-
-                    switch (searchField)
-                    {
-                        case "namn":
-                            searchResults = links.Where(link => link.Name.ToLower().Contains(searchTerm)).ToList();
-                            break;
-                        case "kategori":
-                            searchResults = links.Where(link => link.Category.ToLower().Contains(searchTerm)).ToList();
-                            break;
-                        case "grupp":
-                            searchResults = links.Where(link => link.Group.ToLower().Contains(searchTerm)).ToList();
-                            break;
-                        default:
-                            Console.WriteLine($"Fel: Ogiltigt sökfält '{searchField}'. Tillåtna fält är 'namn', 'kategori' och 'grupp'.");
-                            continue;
-                    }
-
-                    if (searchResults.Any())
-                    {
-                        Console.WriteLine($"Sökresultat för '{searchTerm}' i fältet '{searchField}':");
-                        foreach (var result in searchResults)
-                        {
-                            result.Print(links.IndexOf(result));
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Inga resultat hittades för '{searchTerm}' i fältet '{searchField}'.");
-                    }
+                    PrintSuccess($"Länk '{name}' har skapats.");
                 }
                 else if (command == "spara")
                 {
@@ -186,16 +144,16 @@ namespace MJU23v_DTP_T2
                                     writer.WriteLine(linkObj.Serialize());
                                 }
                             }
-                            Console.WriteLine($"Länkar sparade till {filePath}.");
+                            PrintSuccess($"Länkar sparade till {filePath}.");
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Fel vid sparning av fil: {ex.Message}");
+                            PrintError($"Fel vid sparning av fil: {ex.Message}");
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Fel: Ange ett filnamn för att spara.");
+                        PrintError("Ange ett filnamn för att spara.");
                     }
                 }
                 else if (command == "ladda")
@@ -206,23 +164,23 @@ namespace MJU23v_DTP_T2
 
                         if (!File.Exists(filePath))
                         {
-                            Console.WriteLine($"Fel: Filen '{filePath}' hittades inte. Kontrollera filnamnet och försök igen.");
+                            PrintError($"Filen '{filePath}' hittades inte. Kontrollera filnamnet och försök igen.");
                             continue;
                         }
 
                         try
                         {
                             links = LoadLinksFromFile(filePath);
-                            Console.WriteLine($"Länkar laddade från {filePath}.");
+                            PrintSuccess($"Länkar laddade från {filePath}.");
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine($"Fel vid laddning av fil: {ex.Message}");
+                            PrintError($"Fel vid laddning av fil: {ex.Message}");
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Fel: Ange en giltig filväg.");
+                        PrintError("Ange en giltig filväg.");
                     }
                 }
                 else
@@ -276,27 +234,50 @@ namespace MJU23v_DTP_T2
             Console.WriteLine("ladda <filnamn> - Ladda länkar från en fil med angivet namn. Exempel:");
             Console.WriteLine("                  ladda mina_lankar.txt");
 
-            // Hjälp för att söka efter länkar.
-            Console.WriteLine("sök <fält> <sökord> - Sök efter länkar baserat på ett fält. Tillåtna fält är:");
-            Console.WriteLine("                     namn, kategori eller grupp. Exempel:");
-            Console.WriteLine("                     sök namn Skola");
         }
 
         private static void HandleUnknownCommand(string command)
         {
-            Console.WriteLine($"Okänt kommando: '{command}'. Skriv 'hjälp' för en lista över tillgängliga kommandon.");
+            PrintError($"Okänt kommando: '{command}'. Skriv 'hjälp' för en lista över tillgängliga kommandon.");
+        }
+
+        private static void PrintError(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
+        private static void PrintSuccess(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
+        private static void PrintWarning(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
+        private static void PrintInfo(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(message);
+            Console.ResetColor();
         }
 
         private static string ReadNonEmptyInput(string fieldName)
         {
-            // Läser och validerar att användaren inte lämnar ett tomt fält.
             string input;
             do
             {
                 input = Console.ReadLine()?.Trim();
                 if (string.IsNullOrWhiteSpace(input))
                 {
-                    Console.Write($"Fel: Fältet '{fieldName}' får inte vara tomt. Försök igen: ");
+                    PrintError($"Fältet '{fieldName}' får inte vara tomt. Försök igen:");
                 }
             } while (string.IsNullOrWhiteSpace(input));
 
