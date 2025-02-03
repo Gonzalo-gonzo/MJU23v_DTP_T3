@@ -156,10 +156,8 @@ namespace MJU23v_DTP_T2
                     {
                         filePath = $@"..\..\..\links\{cmdParts[1]}";
 
-                        // Kontrollera om filen existerar innan laddning.
                         if (!File.Exists(filePath))
                         {
-                            // Användarvänligt felmeddelande om filen inte hittas.
                             Console.WriteLine($"Fel: Filen '{filePath}' hittades inte. Kontrollera filnamnet och försök igen.");
                             continue;
                         }
@@ -203,7 +201,7 @@ namespace MJU23v_DTP_T2
                     if (cmdParts.Length >= 3 && cmdParts[1] == "grupp")
                     {
                         string groupName = cmdParts[2];
-                        var groupLinks = links.Where(link => link.Group == groupName).ToList();
+                        var groupLinks = links.Where(link => link.Group.Equals(groupName, StringComparison.OrdinalIgnoreCase)).ToList();
 
                         if (groupLinks.Any())
                         {
@@ -214,7 +212,11 @@ namespace MJU23v_DTP_T2
                         }
                         else
                         {
-                            Console.WriteLine($"Fel: Gruppen '{groupName}' hittades inte.");
+                            // Förbättrat felmeddelande för ogiltig grupp.
+                            var availableGroups = links.Select(link => link.Group).Distinct().OrderBy(g => g).ToList();
+                            var availableGroupsText = availableGroups.Any() ? $"Tillgängliga grupper är: {string.Join(", ", availableGroups)}." : "Det finns inga grupper.";
+
+                            Console.WriteLine($"Fel: Gruppen '{groupName}' hittades inte. {availableGroupsText}");
                         }
                     }
                     else if (cmdParts.Length >= 3 && cmdParts[1] == "länk" && int.TryParse(cmdParts[2], out int linkIndex))
