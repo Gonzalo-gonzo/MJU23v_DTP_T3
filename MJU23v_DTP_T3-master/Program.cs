@@ -218,20 +218,37 @@ namespace MJU23v_DTP_T2
 
         private static void PrintHelp()
         {
-            // Uppdaterad hjälptext med exempel för kommandon.
-            Console.WriteLine("Kommandon:");
+            // Fullständig hjälptext med detaljer och exempel.
+            Console.WriteLine("Kommandon och deras användning:");
+
+            // Hjälp för generella kommandon.
             Console.WriteLine("hjälp           - Skriv ut denna hjälptext.");
             Console.WriteLine("sluta           - Avsluta programmet.");
-            Console.WriteLine("lista           - Lista alla länkar i systemet.");
-            Console.WriteLine("ny              - Skapa en ny länk genom att ange kategori, grupp, namn, beskrivning och URL.");
-            Console.WriteLine("spara <filnamn> - Spara alla länkar till en fil med angivet namn.");
-            Console.WriteLine("ladda <filnamn> - Ladda länkar från en fil med angivet namn.");
-            Console.WriteLine("ta bort <index> - Ta bort länken på det angivna indexet.");
 
-            // Exempel för 'öppna' kommandon.
+            // Hjälp för kommandon som hanterar länkar.
+            Console.WriteLine("lista           - Lista alla länkar i systemet.");
+
+            // Hjälp för att skapa nya länkar.
+            Console.WriteLine("ny              - Skapa en ny länk. Du kommer att bli ombedd att ange:");
+            Console.WriteLine("                  kategori, grupp, namn, beskrivning och URL.");
+
+            // Hjälp för att spara och ladda filer.
+            Console.WriteLine("spara <filnamn> - Spara alla länkar till en fil med angivet namn. Exempel:");
+            Console.WriteLine("                  spara mina_lankar.txt");
+
+            // Hjälp för att ladda filer.
+            Console.WriteLine("ladda <filnamn> - Ladda länkar från en fil med angivet namn. Exempel:");
+            Console.WriteLine("                  ladda mina_lankar.txt");
+
+            // Hjälp för att ta bort länkar.
+            Console.WriteLine("ta bort <index> - Ta bort länken på det angivna indexet. Exempel:");
+            Console.WriteLine("                  ta bort 0");
+
+            // Hjälp för att öppna länkar.
             Console.WriteLine("öppna länk <index> - Öppna en specifik länk baserat på dess index. Exempel:");
             Console.WriteLine("                     öppna länk 0");
 
+            // Hjälp för att öppna grupper av länkar.
             Console.WriteLine("öppna grupp <gruppnamn> - Öppna alla länkar i den angivna gruppen. Exempel:");
             Console.WriteLine("                          öppna grupp Skola");
         }
