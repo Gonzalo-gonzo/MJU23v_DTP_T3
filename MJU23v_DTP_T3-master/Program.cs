@@ -218,7 +218,7 @@ namespace MJU23v_DTP_T2
 
         private static void PrintHelp()
         {
-            // Uppdaterad hjälptext med exempel för kommandon.
+            // Uppdaterad hjälptext med detaljer om alla kommandon.
             Console.WriteLine("Kommandon:");
             Console.WriteLine("hjälp           - Skriv ut denna hjälptext.");
             Console.WriteLine("sluta           - Avsluta programmet.");
@@ -227,13 +227,8 @@ namespace MJU23v_DTP_T2
             Console.WriteLine("spara <filnamn> - Spara alla länkar till en fil med angivet namn.");
             Console.WriteLine("ladda <filnamn> - Ladda länkar från en fil med angivet namn.");
             Console.WriteLine("ta bort <index> - Ta bort länken på det angivna indexet.");
-
-            // Exempel för 'öppna' kommandon.
-            Console.WriteLine("öppna länk <index> - Öppna en specifik länk baserat på dess index. Exempel:");
-            Console.WriteLine("                     öppna länk 0");
-
-            Console.WriteLine("öppna grupp <gruppnamn> - Öppna alla länkar i den angivna gruppen. Exempel:");
-            Console.WriteLine("                          öppna grupp Skola");
+            Console.WriteLine("öppna länk <index> - Öppna en specifik länk baserat på dess index.");
+            Console.WriteLine("öppna grupp <gruppnamn> - Öppna alla länkar i den angivna gruppen.");
         }
 
         private static void HandleUnknownCommand(string command)
