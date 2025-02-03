@@ -218,14 +218,17 @@ namespace MJU23v_DTP_T2
 
         private static void PrintHelp()
         {
-            Console.WriteLine("hjälp           - skriv ut den här hjälpen");
-            Console.WriteLine("sluta           - avsluta programmet");
-            Console.WriteLine("lista           - lista alla länkar");
-            Console.WriteLine("ny              - skapa en ny länk");
-            Console.WriteLine("spara           - spara länkar till fil");
-            Console.WriteLine("ta bort <index> - ta bort en länk");
-            Console.WriteLine("öppna länk <index> - öppna en specifik länk");
-            Console.WriteLine("öppna grupp <gruppnamn> - öppna alla länkar i en grupp");
+            // Uppdaterad hjälptext med detaljer om alla kommandon.
+            Console.WriteLine("Kommandon:");
+            Console.WriteLine("hjälp           - Skriv ut denna hjälptext.");
+            Console.WriteLine("sluta           - Avsluta programmet.");
+            Console.WriteLine("lista           - Lista alla länkar i systemet.");
+            Console.WriteLine("ny              - Skapa en ny länk genom att ange kategori, grupp, namn, beskrivning och URL.");
+            Console.WriteLine("spara <filnamn> - Spara alla länkar till en fil med angivet namn.");
+            Console.WriteLine("ladda <filnamn> - Ladda länkar från en fil med angivet namn.");
+            Console.WriteLine("ta bort <index> - Ta bort länken på det angivna indexet.");
+            Console.WriteLine("öppna länk <index> - Öppna en specifik länk baserat på dess index.");
+            Console.WriteLine("öppna grupp <gruppnamn> - Öppna alla länkar i den angivna gruppen.");
         }
 
         private static void HandleUnknownCommand(string command)
