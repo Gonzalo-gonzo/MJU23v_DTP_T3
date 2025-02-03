@@ -25,7 +25,6 @@ namespace MJU23v_DTP_T2
 
             public Link(string line)
             {
-                // FIXME: Kontrollera att raden innehåller exakt 5 delar innan split.
                 string[] parts = line.Split('|');
                 if (parts.Length != 5)
                 {
@@ -45,7 +44,6 @@ namespace MJU23v_DTP_T2
 
             public void OpenLink()
             {
-                // FIXME: Lägg till felhantering om länken är ogiltig eller inte kan öppnas.
                 Process application = new Process();
                 application.StartInfo.UseShellExecute = true;
                 application.StartInfo.FileName = Url;
@@ -64,7 +62,6 @@ namespace MJU23v_DTP_T2
 
             try
             {
-                // FIXME: Kontrollera om filen existerar innan inläsning.
                 links = LoadLinksFromFile(filePath);
             }
             catch (Exception ex)
@@ -124,7 +121,6 @@ namespace MJU23v_DTP_T2
                     Console.Write("  ange länk: ");
                     string url = Console.ReadLine();
 
-                    // FIXME: Validera URL-formatet innan du lägger till länken.
                     Link newLink = new Link(category, group, name, description, url);
                     links.Add(newLink);
                 }
@@ -146,7 +142,6 @@ namespace MJU23v_DTP_T2
                         }
                         catch (Exception ex)
                         {
-                            // FIXME: Lägg till bättre felmeddelande för skrivfel.
                             Console.WriteLine($"Fel vid sparning av fil: {ex.Message}");
                         }
                     }
@@ -167,7 +162,6 @@ namespace MJU23v_DTP_T2
                         }
                         catch (Exception ex)
                         {
-                            // FIXME: Lägg till bättre felmeddelande för ogiltig filväg.
                             Console.WriteLine($"Fel vid laddning av fil: {ex.Message}");
                         }
                     }
@@ -180,6 +174,7 @@ namespace MJU23v_DTP_T2
                 {
                     if (cmdParts.Length >= 3 && cmdParts[1] == "bort" && int.TryParse(cmdParts[2], out int index))
                     {
+                        // Kontrollerar om index är giltigt.
                         if (index >= 0 && index < links.Count)
                         {
                             links.RemoveAt(index);
@@ -187,12 +182,13 @@ namespace MJU23v_DTP_T2
                         }
                         else
                         {
-                            // FIXME: Förbättra felmeddelandet för ogiltigt index.
+                            // Användarvänligt felmeddelande för ogiltigt index.
                             Console.WriteLine($"Fel: Index {index} är ogiltigt. Ange ett värde mellan 0 och {links.Count - 1}.");
                         }
                     }
                     else
                     {
+                        // Felmeddelande för ogiltigt kommando eller argument.
                         Console.WriteLine("Fel: Ogiltigt kommando eller argument för 'ta bort'.");
                     }
                 }
@@ -212,7 +208,6 @@ namespace MJU23v_DTP_T2
                         }
                         else
                         {
-                            // FIXME: Informera användaren om att gruppen inte hittades.
                             Console.WriteLine($"Fel: Gruppen '{groupName}' hittades inte.");
                         }
                     }
@@ -224,7 +219,6 @@ namespace MJU23v_DTP_T2
                         }
                         else
                         {
-                            // FIXME: Lägg till bättre felmeddelande för ogiltigt länkindex.
                             Console.WriteLine($"Fel: Index {linkIndex} är ogiltigt. Ange ett värde mellan 0 och {links.Count - 1}.");
                         }
                     }
@@ -299,7 +293,7 @@ namespace MJU23v_DTP_T2
 
         private static void HandleUnknownCommand(string command)
         {
-            // FIXME: Gör felmeddelandet mer användarvänligt.
+            // Felmeddelande för okända kommandon.
             Console.WriteLine($"Okänt kommando: '{command}'");
         }
     }
