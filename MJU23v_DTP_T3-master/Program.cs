@@ -102,17 +102,24 @@ namespace MJU23v_DTP_T2
                 else if (command == "ny")
                 {
                     Console.WriteLine("Skapa en ny länk:");
-                    Console.Write("  ange kategori: ");
-                    string category = Console.ReadLine();
-                    Console.Write("  ange grupp: ");
-                    string group = Console.ReadLine();
-                    Console.Write("  ange namn: ");
-                    string name = Console.ReadLine();
-                    Console.Write("  ange beskrivning: ");
-                    string description = Console.ReadLine();
-                    Console.Write("  ange länk: ");
-                    string url = Console.ReadLine();
 
+                    // Förbättrad validering för att undvika tomma fält.
+                    Console.Write("  ange kategori: ");
+                    string category = ReadNonEmptyInput("kategori");
+
+                    Console.Write("  ange grupp: ");
+                    string group = ReadNonEmptyInput("grupp");
+
+                    Console.Write("  ange namn: ");
+                    string name = ReadNonEmptyInput("namn");
+
+                    Console.Write("  ange beskrivning: ");
+                    string description = ReadNonEmptyInput("beskrivning");
+
+                    Console.Write("  ange länk: ");
+                    string url = ReadNonEmptyInput("URL");
+
+                    // Validera att URL-formatet är korrekt.
                     if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
                     {
                         Console.WriteLine($"Fel: URL '{url}' är ogiltig. Ange en giltig URL.");
@@ -125,7 +132,6 @@ namespace MJU23v_DTP_T2
                 }
                 else if (command == "sök")
                 {
-                    // Implementera sökfunktionalitet.
                     if (cmdParts.Length < 3)
                     {
                         Console.WriteLine("Fel: Ange vad du vill söka efter och sökordet. Exempel: sök namn Skola");
@@ -278,9 +284,23 @@ namespace MJU23v_DTP_T2
 
         private static void HandleUnknownCommand(string command)
         {
-            var validCommands = new[] { "hjälp", "sluta", "lista", "ny", "spara", "ladda", "sök" };
+            Console.WriteLine($"Okänt kommando: '{command}'. Skriv 'hjälp' för en lista över tillgängliga kommandon.");
+        }
 
-            Console.WriteLine($"Okänt kommando: '{command}'. Tillgängliga kommandon är: {string.Join(", ", validCommands)}.");
+        private static string ReadNonEmptyInput(string fieldName)
+        {
+            // Läser och validerar att användaren inte lämnar ett tomt fält.
+            string input;
+            do
+            {
+                input = Console.ReadLine()?.Trim();
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    Console.Write($"Fel: Fältet '{fieldName}' får inte vara tomt. Försök igen: ");
+                }
+            } while (string.IsNullOrWhiteSpace(input));
+
+            return input;
         }
     }
 }
